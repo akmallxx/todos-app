@@ -1,8 +1,6 @@
-import React, { useEffect, useState } from "react";
-import { Text, TextInput, View, Switch, TouchableOpacity, Alert } from "react-native";
-import axios from "axios";
-
-import '../global.css';
+import { useEffect, useState } from 'react';
+import { Text, TextInput, View, Switch, TouchableOpacity, Alert, ScrollView } from 'react-native';
+import axios from 'axios';
 
 type Todo = {
   id?: number;
@@ -18,18 +16,18 @@ type Props = {
 
 export default function TodoForm({ selectedTodo, onSaved }: Props) {
   const [todo, setTodo] = useState<Todo>({
-    title: "",
-    details: "",
+    title: '',
+    details: '',
     done: false,
   });
 
-  const API_URL = "http://192.168.1.42:8080/todos"; // ganti IP kamu
+  const API_URL = 'http://192.168.1.7:8080/todos'; // ganti IP kamu
 
   useEffect(() => {
     if (selectedTodo) {
       setTodo(selectedTodo);
     } else {
-      setTodo({ title: "", details: "", done: false });
+      setTodo({ title: '', details: '', done: false });
     }
   }, [selectedTodo]);
 
@@ -40,41 +38,56 @@ export default function TodoForm({ selectedTodo, onSaved }: Props) {
       } else {
         await axios.post(API_URL, todo);
       }
+
+      // ✅ Alert sukses setelah berhasil menyimpan
+      Alert.alert('Berhasil', todo.id ? 'Todo berhasil diperbarui!' : 'Todo berhasil disimpan!');
+
       onSaved();
-      setTodo({ title: "", details: "", done: false });
+      setTodo({ title: '', details: '', done: false });
     } catch (error) {
-      Alert.alert("Gagal menyimpan");
+      Alert.alert('Gagal menyimpan', 'Silakan coba lagi nanti.');
       console.error(error);
     }
   };
 
   return (
-    <View className="mb-6 space-y-3">
-      <Text className="text-xl font-bold">{todo.id ? "Edit Todo" : "Add Todo"}</Text>
-      <TextInput
-        className="border px-4 py-2 rounded"
-        placeholder="Title"
-        value={todo.title}
-        onChangeText={(text) => setTodo({ ...todo, title: text })}
-      />
-      <TextInput
-        className="border px-4 py-2 rounded"
-        placeholder="Details"
-        value={todo.details}
-        onChangeText={(text) => setTodo({ ...todo, details: text })}
-      />
-      <View className="flex-row justify-between items-center">
+    <ScrollView className="space-y-5 rounded-xl">
+      <Text className="text-2xl font-bold text-gray-800">
+        {todo.id ? 'Edit Todo' : 'Tambah Todo'}
+      </Text>
+
+      <View>
+        <Text className="mb-1 font-medium text-gray-700">Judul</Text>
+        <TextInput
+          className="rounded-md border border-gray-300 px-4 py-2"
+          placeholder="Masukkan judul"
+          value={todo.title}
+          onChangeText={(text) => setTodo({ ...todo, title: text })}
+        />
+      </View>
+
+      <View>
+        <Text className="mb-1 font-medium text-gray-700">Deskripsi</Text>
+        <TextInput
+          className="h-28 rounded-md border border-gray-300 px-4 py-2 text-start"
+          placeholder="Tuliskan deskripsi"
+          value={todo.details}
+          multiline
+          textAlignVertical="top"
+          onChangeText={(text) => setTodo({ ...todo, details: text })}
+        />
+      </View>
+
+      <View className="mt-3 flex-row items-center justify-between">
         <View className="flex-row items-center space-x-2">
-          <Text>Done</Text>
-          <Switch
-            value={todo.done}
-            onValueChange={(val) => setTodo({ ...todo, done: val })}
-          />
+          <Text className="font-medium text-gray-700">Selesai</Text>
+          <Switch value={todo.done} onValueChange={(val) => setTodo({ ...todo, done: val })} />
         </View>
-        <TouchableOpacity onPress={handleSubmit} className="bg-blue-600 px-4 py-2 rounded">
-          <Text className="text-white font-bold">{todo.id ? "Update" : "Create"}</Text>
+
+        <TouchableOpacity onPress={handleSubmit} className="rounded-md bg-blue-600 px-6 py-3">
+          <Text className="font-bold text-white">{todo.id ? 'Perbarui' : 'Simpan'}</Text>
         </TouchableOpacity>
       </View>
-    </View>
+    </ScrollView>
   );
 }

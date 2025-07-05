@@ -1,8 +1,5 @@
-import React from "react";
-import { Text, View, TouchableOpacity } from "react-native";
+import { Text, View, TouchableOpacity, Alert } from "react-native";
 import Icon from 'react-native-vector-icons/MaterialIcons';
-
-import '../global.css';
 
 type Todo = {
   id?: number;
@@ -18,14 +15,38 @@ type Props = {
 };
 
 export default function TodoList({ todos, onEdit, onDelete }: Props) {
+  const sortedTodos = [...todos].reverse();
+
+  // Fungsi untuk handle konfirmasi sebelum menghapus
+  const handleDelete = (id: number) => {
+    Alert.alert(
+      "Konfirmasi Hapus",
+      "Apakah kamu yakin ingin menghapus todo ini?",
+      [
+        {
+          text: "Batal",
+          style: "cancel",
+        },
+        {
+          text: "Ya, Hapus",
+          style: "destructive",
+          onPress: () => {
+            onDelete(id);
+            Alert.alert("Berhasil", "Todo berhasil dihapus!");
+          },
+        },
+      ]
+    );
+  };
+
   return (
-    <View className="bg-gray-50 p-4 rounded-xl">
+    <View className="bg-gray-100 p-4 rounded-xl mt-8">
       <Text className="text-2xl font-bold mb-4 text-gray-800">📝 Todo List</Text>
 
-      {todos.length === 0 ? (
+      {sortedTodos.length === 0 ? (
         <Text className="text-gray-500">Belum ada todo</Text>
       ) : (
-        todos.map((todo) => (
+        sortedTodos.map((todo) => (
           <View
             key={todo.id}
             className="bg-white p-4 rounded-lg mb-3 shadow-sm flex-row justify-between items-center"
@@ -38,7 +59,7 @@ export default function TodoList({ todos, onEdit, onDelete }: Props) {
               </Text>
             </View>
 
-            <View className="flex-row space-x-2">
+            <View className="flex-row space-x-2 gap-2">
               <TouchableOpacity
                 onPress={() => onEdit(todo)}
                 className="bg-blue-100 p-2 rounded-full"
@@ -47,7 +68,7 @@ export default function TodoList({ todos, onEdit, onDelete }: Props) {
               </TouchableOpacity>
 
               <TouchableOpacity
-                onPress={() => onDelete(todo.id!)}
+                onPress={() => handleDelete(todo.id!)}
                 className="bg-red-100 p-2 rounded-full"
               >
                 <Icon name="delete" size={20} color="#dc2626" />

@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { SafeAreaView, ScrollView, Text, View, Alert } from "react-native";
 import TodoForm from "./components/TodoForm";
 import TodoList from "./components/TodoList";
@@ -18,7 +18,7 @@ export default function App() {
   const [selectedTodo, setSelectedTodo] = useState<Todo | null>(null);
   const [refresh, setRefresh] = useState(false);
 
-  const API_URL = "http://192.168.1.30:8080/todos"; // Ganti dengan IP lokal kamu
+  const API_URL = "http://192.168.1.7:8080/todos"; // Ganti dengan IP lokal kamu
 
   const fetchTodos = async () => {
     try {
@@ -53,7 +53,7 @@ export default function App() {
   }, []);
 
   return (
-    <SafeAreaView className="flex-1 bg-white px-4 pt-10">
+    <SafeAreaView className="flex-1 bg-white px-6 pt-16">
       <ScrollView>
         <TodoForm selectedTodo={selectedTodo} onSaved={handleSave} />
         <TodoList todos={todos} onEdit={handleEdit} onDelete={handleDelete} />
